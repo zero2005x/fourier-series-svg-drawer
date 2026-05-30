@@ -1,0 +1,4 @@
+{
+  "name": "Fourier Series SVG Drawer",
+  "description": "An interactive environment to trace and draw preset or custom SVG paths using Fourier Series epicycles and Discrete Fourier Transform (DFT)."
+}
