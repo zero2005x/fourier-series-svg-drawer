@@ -54,12 +54,12 @@ export default function App() {
   const [strokeColor, setStrokeColor] = useState<string>('#ff007f'); // Neon Pink default
   const [trailRatio, setTrailRatio] = useState<number>(1.0); // Trail length ratio (1.0 = full / infinite delay)
   const strokeColors = [
-    { value: '#ff007f', label: '極光粉粉', className: 'bg-[#ff007f]' },
-    { value: '#00f0ff', label: '未來青藍', className: 'bg-[#00f0ff]' },
-    { value: '#10b981', label: '劇毒翡翠', className: 'bg-[#10b981]' },
-    { value: '#f59e0b', label: '烈焰夕陽', className: 'bg-[#f59e0b]' },
-    { value: '#a855f7', label: '賽博極光', className: 'bg-[#a855f7]' },
-    { value: '#ffffff', label: '耀眼極簡', className: 'bg-[#ffffff]' }
+    { value: '#ff007f', className: 'bg-[#ff007f]' },
+    { value: '#00f0ff', className: 'bg-[#00f0ff]' },
+    { value: '#10b981', className: 'bg-[#10b981]' },
+    { value: '#f59e0b', className: 'bg-[#f59e0b]' },
+    { value: '#a855f7', className: 'bg-[#a855f7]' },
+    { value: '#ffffff', className: 'bg-[#ffffff]' }
   ];
 
   // Mathematical and DFT core points
@@ -206,7 +206,7 @@ export default function App() {
       }
 
       if (rawPoints.length === 0) {
-        throw new Error('無法從預設中產生存取點！');
+        throw new Error(t.errorTitle);
       }
 
       const scaled = centerAndScalePoints(rawPoints, currentWidth, currentHeight);
@@ -238,7 +238,7 @@ export default function App() {
       setSelectedPresetId(presetId);
     } catch (err: any) {
       if (epoch === calculationEpochRef.current) {
-        setErrorMsg(err.message || '載入預設時發生未預期錯誤');
+        setErrorMsg(err.message || t.errorTitle);
       }
     } finally {
       if (epoch === calculationEpochRef.current) {
@@ -279,7 +279,7 @@ export default function App() {
           setCycleCompletionProgress(0);
         } catch (err: any) {
           if (epoch === calculationEpochRef.current) {
-            setErrorMsg(err.message || '重採樣自訂 SVG 失敗');
+            setErrorMsg(err.message || t.errorTitle);
           }
         } finally {
           if (epoch === calculationEpochRef.current) {
@@ -357,7 +357,7 @@ export default function App() {
         }
 
         if (rawPoints.length === 0) {
-          throw new Error('無法從選取的參數中產生採樣點！');
+          throw new Error(t.errorTitle);
         }
 
         const scaled = centerAndScalePoints(rawPoints, canvasSize.width, canvasSize.height);
@@ -384,17 +384,11 @@ export default function App() {
         }
 
         setIsPlaying(true);
-        setSuccessMsg(
-          currentLang === 'zh-TW'
-            ? `參數套用成功！已重新完成傅立葉採樣（共 ${dftOutput.length} 合成諧波），開始繪製。`
-            : currentLang === 'zh-CN'
-            ? `参数套用成功！已重新完成傅氏采样（共 ${dftOutput.length} 合成谐波），开始绘制。`
-            : `Parameters applied! Resampled with ${dftOutput.length} harmonics, tracing started.`
-        );
+        setSuccessMsg(`${t.successTitle} ${t.totalHarmonics}: ${dftOutput.length}`);
         setTimeout(() => setSuccessMsg(null), 5000);
       } catch (err: any) {
         if (epoch === calculationEpochRef.current) {
-          setErrorMsg(err.message || '採樣計算失敗');
+          setErrorMsg(err.message || t.errorTitle);
         }
       } finally {
         if (epoch === calculationEpochRef.current) {
@@ -404,13 +398,7 @@ export default function App() {
     } else {
       // Epicycles, speed representation, or trail limits updated without resampling
       setIsPlaying(true);
-      setSuccessMsg(
-        currentLang === 'zh-TW'
-          ? `參數已完美更新，且無需重新採樣！`
-          : currentLang === 'zh-CN'
-          ? `参数已完美更新，且无需重新采样！`
-          : `Parameters updated without recalculation!`
-      );
+      setSuccessMsg(t.successTitle);
       setTimeout(() => setSuccessMsg(null), 3000);
     }
   };
@@ -427,13 +415,13 @@ export default function App() {
     reader.onload = (event) => {
       const text = event.target?.result as string;
       if (!text) {
-        setErrorMsg('檔案內容為空，請選擇正確的 SVG 向量檔！');
+        setErrorMsg(t.errorTitle);
         return;
       }
 
       // Validate if it is genuine XML/SVG
       if (!text.includes('<svg') && !text.includes('<path')) {
-         setErrorMsg('此檔案似乎不是標準的 SVG 圖片文件。請確定內置 <path> 線段！');
+        setErrorMsg(t.errorTitle);
          return;
       }
 
@@ -442,13 +430,7 @@ export default function App() {
         setDraftPresetId('custom');
         setDraftCustomSvgFileName(file.name);
         setDraftCustomSvgText(text);
-        setSuccessMsg(
-          currentLang === 'zh-TW'
-            ? `已將「${file.name}」載入至暫存參數中。請在調整周轉圓/流速/採樣解析度後，點擊「套用參數」開始繪製。`
-            : currentLang === 'zh-CN'
-            ? `已将「${file.name}」载入至暂存参数中。请在调整周转圆/流速/采样解析度后，点击「套用参数」开始绘制。`
-            : `Draft SVG loaded from "${file.name}". Click "Apply Parameters & Start Tracing" to start drawing!`
-        );
+        setSuccessMsg(`${t.successTitle}: ${file.name}`);
         setTimeout(() => setSuccessMsg(null), 6000);
         return;
       }
@@ -461,7 +443,7 @@ export default function App() {
         try {
           const rawPoints = samplePointsFromSVG(text, samplingResolution);
           if (rawPoints.length === 0) {
-            throw new Error('SVG 中未檢測到可用的向量路徑座標點！');
+            throw new Error(t.errorTitle);
           }
 
           const scaled = centerAndScalePoints(rawPoints, canvasSize.width, canvasSize.height);
@@ -492,32 +474,13 @@ export default function App() {
             setIsPlaying(false);
           }
 
-          setSuccessMsg(
-            currentLang === 'zh-TW'
-              ? `解鎖成功！已從「${file.name}」解析出 ${rawPoints.length} 個採樣錨點。${
-                  autoPlayOnUpload ? '開始自動播放繪製！' : '請點擊「播放」按鈕開始繪製。'
-                }`
-              : currentLang === 'zh-CN'
-              ? `解锁成功！已从「${file.name}」解析出 ${rawPoints.length} 个采样锚点。${
-                  autoPlayOnUpload ? '开始自动播放绘制！' : '请点击「播放」按钮开始绘制。'
-                }`
-              : `Successfully loaded! Extracted ${rawPoints.length} sampling points from "${file.name}". ${
-                  autoPlayOnUpload ? 'Autoplay started!' : 'Please click Play to start.'
-                }`
-          );
+          setSuccessMsg(`${t.successTitle}: ${file.name} (${rawPoints.length})`);
           
           // Auto-dismiss success alert
           setTimeout(() => setSuccessMsg(null), 5000);
         } catch (err: any) {
           if (epoch === calculationEpochRef.current) {
-            setErrorMsg(
-              err.message || 
-              (currentLang === 'zh-TW'
-                ? '解析上傳檔案失敗。請確定 SVG 包含連續單筆畫閉合 <path>！'
-                : currentLang === 'zh-CN'
-                ? '解析上传文件失败。请确定 SVG 包含连续单笔画闭合 <path>！'
-                : 'Failed to parse uploaded SVG. Ensure it contains a continuous closed vector <path>!')
-            );
+            setErrorMsg(err.message || t.errorTitle);
           }
         } finally {
           if (epoch === calculationEpochRef.current) {
@@ -906,7 +869,7 @@ export default function App() {
           setIsRecording(false);
           isRecordingRef.current = false;
           setIsPlaying(false);
-          setSuccessMsg('影片錄製成功，並已啟動下載！');
+          setSuccessMsg(t.successTitle);
           setTimeout(() => setSuccessMsg(null), 4000);
         };
 
@@ -918,7 +881,7 @@ export default function App() {
         recorder.start();
         setIsPlaying(true);
       } catch (err: any) {
-        setErrorMsg('您的瀏覽器不支援 Canvas 錄影功能：' + (err.message || err));
+        setErrorMsg(`${t.errorTitle}: ${err.message || err}`);
         setIsRecording(false);
         isRecordingRef.current = false;
       }
@@ -1118,12 +1081,12 @@ export default function App() {
                       📂 {manualConfirmMode ? draftCustomSvgFileName : customSvgFileName}
                     </span>
                     <span className="text-[9px] font-mono tracking-wider px-1.5 py-0.5 rounded bg-pink-950/60 text-pink-300 uppercase">
-                      {manualConfirmMode && draftCustomSvgFileName !== customSvgFileName ? '待套用暫存' : t.customUploadedTag}
+                      {manualConfirmMode && draftCustomSvgFileName !== customSvgFileName ? t.draftPendingTag : t.customUploadedTag}
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-400 leading-normal mt-0.5">
                     {manualConfirmMode && draftCustomSvgFileName !== customSvgFileName 
-                      ? '點擊右方下方的「套用參數」按鈕，繪製區才會開始進行重新採樣。' 
+                      ? t.draftPendingDesc 
                       : t.customUploadedDesc}
                   </p>
                 </div>
@@ -1143,14 +1106,10 @@ export default function App() {
               <div className="space-y-0.5 max-w-[75%]">
                 <span className="text-xs font-semibold text-slate-100 flex items-center gap-1.5">
                   <span className={`w-2.5 h-2.5 rounded-full ${manualConfirmMode ? 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]' : 'bg-slate-700'}`} />
-                  {currentLang === 'zh-TW' ? '手動確認參數再開始' : currentLang === 'zh-CN' ? '手动确认参数再开始' : 'Manual Apply Mode'}
+                  {t.manualApplyTitle}
                 </span>
                 <p className="text-[10px] text-slate-400 leading-normal">
-                  {currentLang === 'zh-TW' 
-                    ? '調整解析度/數量/流速時凍結，手動點選套用才採樣重繪' 
-                    : currentLang === 'zh-CN'
-                    ? '调整解析度/数量/流速时冻结，手动点击套用才采样重绘'
-                    : 'Freeze tracing; manually click Apply to resample and redraw'}
+                  {t.manualApplyDesc}
                 </p>
               </div>
               <button
@@ -1187,8 +1146,8 @@ export default function App() {
                   <Sparkles size={14} className={hasPendingChanges ? 'animate-spin text-amber-300' : 'text-slate-500'} />
                   <span>
                     {hasPendingChanges
-                      ? (currentLang === 'zh-TW' ? '套用變更並開始繪製' : currentLang === 'zh-CN' ? '套用变更并开始绘制' : 'Apply Changes & Start Tracing')
-                      : (currentLang === 'zh-TW' ? '參數與繪圖同步中 (Applied)' : currentLang === 'zh-CN' ? '参数与绘图同步中 (Applied)' : 'Parameters Applied')}
+                      ? t.applyChanges
+                      : t.parametersApplied}
                   </span>
                 </button>
               </motion.div>
@@ -1403,7 +1362,7 @@ export default function App() {
                           ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-950 scale-110 shadow-lg'
                           : 'hover:scale-105'
                       }`}
-                      title={color.label}
+                      title={`${t.strokeColorLabel}: ${color.value}`}
                     >
                       {strokeColor === color.value && (
                         <span className="w-1.5 h-1.5 bg-black rounded-full" />
@@ -1505,7 +1464,7 @@ export default function App() {
               {manualConfirmMode && hasPendingChanges && (
                 <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-amber-500/30 bg-amber-950/80 backdrop-blur-md text-amber-400 text-[10px] font-semibold tracking-wider shadow-[0_0_15px_rgba(245,158,11,0.15)] z-20 select-none animate-bounce">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
-                  <span>{currentLang === 'zh-TW' ? '參數待套用' : currentLang === 'zh-CN' ? '参数待套用' : 'Pending Apply'}</span>
+                  <span>{t.pendingApply}</span>
                 </div>
               )}
 
@@ -1644,7 +1603,7 @@ export default function App() {
           <div className="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-5 shadow-lg backdrop-blur">
             <h2 className="text-sm font-semibold text-white tracking-wide uppercase flex items-center gap-2 mb-4">
               <LineChart size={15} className="text-indigo-400" />
-              傅立葉頻譜與振幅能量分析 (Frequency Spectrum)
+              {t.spectrumLabel}
             </h2>
 
             {/* Visual Bars for Amplitudes */}
@@ -1652,7 +1611,7 @@ export default function App() {
               <div className="h-[90px] w-full bg-slate-950 rounded-xl border border-slate-900 p-3 flex items-end gap-[2px] overflow-hidden">
                 {fourierCoefficients.length === 0 ? (
                   <div className="w-full h-full flex items-center justify-center text-xs text-slate-600">
-                    等待頻譜數據計算中...
+                    {t.spectrumPlaceholder}
                   </div>
                 ) : (
                   fourierCoefficients.slice(0, 55).map((coef, idx) => {
@@ -1668,9 +1627,9 @@ export default function App() {
                       >
                         {/* Hover Tooltip card over bar */}
                         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 p-2 bg-slate-900 border border-slate-800 text-[10px] rounded shadow-xl hidden group-hover:block transition-all z-20 whitespace-nowrap text-left">
-                          <p className="font-mono text-indigo-300">階數(指數): k = {coef.freq}</p>
-                          <p className="font-mono text-slate-400">振幅幅度: {coef.amp.toFixed(3)}</p>
-                          <p className="font-mono text-slate-400">相位初始: {(coef.phase * (180 / Math.PI)).toFixed(1)}°</p>
+                          <p className="font-mono text-indigo-300">{t.spectrumFreq} {coef.freq}</p>
+                          <p className="font-mono text-slate-400">{t.spectrumAmp} {coef.amp.toFixed(3)}</p>
+                          <p className="font-mono text-slate-400">{t.spectrumPhase} {(coef.phase * (180 / Math.PI)).toFixed(1)}°</p>
                         </div>
 
                         {/* Bar Segment */}

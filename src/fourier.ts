@@ -271,7 +271,7 @@ export function samplePointsFromSVG(svgContent: string, sampleCount = 1200): Poi
       });
       if (points.length > 0) return points;
     }
-    throw new Error('SVG 中未找到任何可解析的 <path> 或向量線段！');
+    throw new Error('No parseable <path> or vector segment was found in the SVG.');
   }
 
   // Create an off-screen SVG path element to leverage the browser's getPointAtLength API
@@ -293,7 +293,7 @@ export function samplePointsFromSVG(svgContent: string, sampleCount = 1200): Poi
   try {
     const totalLength = tempPath.getTotalLength();
     if (totalLength <= 0) {
-      throw new Error('SVG 路徑長度為 0，請檢查 SVG 檔案是否正確！');
+      throw new Error('The SVG path length is zero. Check whether the SVG file is valid.');
     }
 
     for (let i = 0; i < sampleCount; i++) {
@@ -304,7 +304,7 @@ export function samplePointsFromSVG(svgContent: string, sampleCount = 1200): Poi
   } catch (err) {
     console.error('Error sampling SVG path:', err);
     // Fallback: manual parsing or generic error
-    throw new Error('無法取樣此 SVG 路徑。請確保它是有效的二維向量路徑！');
+    throw new Error('Unable to sample this SVG path. Ensure it is a valid 2D vector path.');
   }
 
   return points;
