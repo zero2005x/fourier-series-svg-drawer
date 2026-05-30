@@ -1691,14 +1691,14 @@ export default function App() {
               <div className="flex justify-between items-baseline text-[11px] text-slate-400">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded bg-indigo-500 inline-block" />
-                  <span>參與合成諧波 (已啟用)</span>
+                  <span>{t.spectrumLegendActive}</span>
                 </span>
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded bg-slate-800 inline-block" />
-                  <span>高頻截止諧波 (未啟用)</span>
+                  <span>{t.spectrumLegendInactive}</span>
                 </span>
                 <span className="text-[10px] text-right text-slate-500 font-mono">
-                  前 55 個傅立葉主要能量項
+                  {t.spectrumFooter}
                 </span>
               </div>
             </div>
@@ -1712,7 +1712,7 @@ export default function App() {
           <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
               <HelpCircle size={16} className="text-indigo-400" />
-              科學原理與數學方程式 (Fourier Mathematics)
+              {t.mathTitle}
             </h3>
             <button
               onClick={() => setMathPanelOpen(!mathPanelOpen)}
@@ -1733,13 +1733,13 @@ export default function App() {
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-1">
                   <div className="space-y-3">
-                    <h4 className="font-semibold text-indigo-300">1. 二維向量複數化</h4>
+                    <h4 className="font-semibold text-indigo-300">{t.math1Title}</h4>
                     <p>
-                      任何閉合的 2D 軌跡可以看作是時間 $t$ 的連續複數平面曲線。複數座標點 $z_n = x_n + i \cdot y_n$ 將二維幾何與歐拉公式完美連結。
+                      {t.math1Desc}
                     </p>
-                    <h4 className="font-semibold text-indigo-300 mt-4">2. 離散傅立葉變換 (DFT)</h4>
+                    <h4 className="font-semibold text-indigo-300 mt-4">{t.math2Title}</h4>
                     <p>
-                      透過 DFT 將時域空間點轉換為頻域多組複數係數 $X_k$，代表各諧波圓的旋轉半徑（振幅）和初始方向（相位）：
+                      {t.math2Desc}
                     </p>
                     <div className="bg-slate-950/45 p-3 rounded-xl border border-slate-900 font-mono text-indigo-400/90 text-center select-all my-2">
                       X_k = 1/N * Σ [z_n * e^(-i * 2π * k * n / N)]
@@ -1747,15 +1747,15 @@ export default function App() {
                   </div>
 
                   <div className="space-y-3">
-                    <h4 className="font-semibold text-indigo-300">3. 周轉圓 (Epicycles) 合成</h4>
+                    <h4 className="font-semibold text-indigo-300">{t.math3Title}</h4>
                     <p>
-                      所有圓心彼此串接旋轉，第 $k$ 個圓半徑為其振幅 $|X_k|$，角速度為頻率 $k$。將其在複數平面疊加求和即可重構原本的高精準度輪廓：
+                      {t.math3Desc}
                     </p>
                     <div className="bg-slate-950/45 p-3 rounded-xl border border-slate-900 font-mono text-indigo-400/90 text-center select-all my-2">
                       f(t) = Σ |X_k| * e^(i * (k * t + phase_k))
                     </div>
                     <p className="text-slate-500 text-[11px]">
-                      頻譜圖中，可以清晰發現愈是平滑寬廣的圖形，低頻項能量比重愈大。愈是複雜尖銳的細部裝飾線（例如頭髮、尖角），則需大幅拉高 <strong>周轉圓數量 N</strong> 才能將極小的高能量高頻波完美重構。
+                      {t.math3Footer}
                     </p>
                   </div>
                 </div>
@@ -1764,7 +1764,7 @@ export default function App() {
           </AnimatePresence>
 
           <div className="text-center text-[10px] text-slate-600 border-t border-slate-900/60 pt-4">
-            Google AI Studio Build © 2026 • 傅立葉級數 SVG 描繪應用 • Designed with precision details
+            {t.copyright}
           </div>
         </div>
       </footer>
